@@ -1,0 +1,11 @@
+version: "3.2"
+services:
+  node:
+    image: node:13-alpine
+    working_dir: /home/node/app
+    volumes:
+      - ./:/home/node/app
+    ports:
+      - 127.0.0.1:7006:3000
+    command: "npm start"
+    restart: always
