@@ -12,6 +12,14 @@ const init = async () => {
 
 	server.route({
 		method: "GET",
+		path: "/",
+		handler: (request, h) => {
+			return "Hello world"
+		}
+	});
+
+	server.route({
+		method: "GET",
 		path: "/covid-19.log",
 		handler: (request, h) => {
 			const country = request.query.country;
