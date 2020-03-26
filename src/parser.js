@@ -6,7 +6,7 @@ function getValue(element, selector) {
 		.load("")(element)
 		.find(selector)
 		.text()
-		.replace(/\s/g, "");
+		.replace(/(\s|,)/g, "")
 }
 
 function parseData(response, country, type) {
