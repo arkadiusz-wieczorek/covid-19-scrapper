@@ -1,6 +1,6 @@
 "use strict";
 const Hapi = require("@hapi/hapi");
-const parseData = require("./parser");
+const { parseDataByTotal, parseDataByCountry } = require("./parser");
 const axios = require("axios");
 const url = "https://www.worldometers.info/coronavirus/#countries";
 
@@ -19,22 +19,17 @@ const init = async () => {
 
 	server.route({
 		method: "GET",
-		path: "/covid-19.log",
-		handler: (request, h) => {
-			const country = request.query.country;
-			return axios.get(url).then(response => {
-				return parseData(response, country, "log");
-			});
-		}
-	});
-
-	server.route({
-		method: "GET",
-		path: "/covid-19.json",
+		path: "/covid-19",
 		handler: (request, h) => {
 			return axios.get(url).then(response => {
+				const type = request.query.type;
 				const country = request.query.country;
-				return parseData(response, country, "json");
+
+				if (country) {
+					return parseDataByCountry(response, type, country);
+				} else {
+					return parseDataByTotal(response, type);
+				}
 			});
 		}
 	});

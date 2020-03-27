@@ -1,20 +1,43 @@
 const fs = require("fs");
 const cheerio = require("cheerio");
 
-function getValue(element, selector) {
+function getValue(element, selector = "span:nth-child(1)") {
 	return cheerio
 		.load("")(element)
 		.find(selector)
 		.text()
-		.replace(/(\s|,)/g, "")
+		.replace(/(\s|,)/g, "");
 }
 
-function parseData(response, country, type) {
+function parseDataByTotal(response, type) {
 	const $ = cheerio.load(response.data.toString());
-	const datatime = new Date()
-		.toJSON()
-		.slice(0, 19)
-		.replace(/[-T]/g, ":");
+	let state = {};
+
+	state.total = getValue(
+		$(".content-inner > div:nth-child(7) > div:nth-child(2)")
+	);
+	state.deaths = getValue(
+		$(".content-inner > div:nth-child(9) > div:nth-child(2)")
+	);
+	state.recovered = getValue(
+		$(".content-inner > div:nth-child(10) > div:nth-child(2)")
+	);
+	state.active = getValue(
+		$(
+			"div.col-md-6:nth-child(14) > div:nth-child(1) > div:nth-child(2) > div:nth-child(1) > div:nth-child(1)"
+		),
+		".number-table-main"
+	);
+
+	if (type === "json") {
+		return state;
+	} else {
+		return `${state.total}|${state.recovered}`;
+	}
+}
+
+function parseDataByCountry(response, type, country) {
+	const $ = cheerio.load(response.data.toString());
 	let state = {};
 
 	$("#main_table_countries_today > tbody")
@@ -54,5 +77,4 @@ function parseData(response, country, type) {
 		return `${state.cases.total} ${state.cases.new} ${state.deaths.total} ${state.recovered}`;
 	}
 }
-module.exports = parseData;
-// fs.writeFileSync("./covid.log", log, { encoding: "utf8", flag: "w" });
+module.exports = { parseDataByTotal, parseDataByCountry };
