@@ -32,7 +32,7 @@ function parseDataByTotal(response, type) {
 	if (type === "json") {
 		return state;
 	} else {
-		return `${state.total}|${state.recovered}`;
+		return `${state.total} ${state.recovered}`;
 	}
 }
 
